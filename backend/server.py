@@ -407,7 +407,7 @@ async def create_reservation(reservation_data: dict):
     )
     
     await db.reservations.insert_one(prepare_for_mongo(reservation.dict()))
-    return {"message": "Reserva creada exitosamente", "reservation": reservation}
+    return {"message": "Reserva creada exitosamente", "reservation": clean_mongo_doc(reservation.dict())}
 
 @api_router.get("/payments")
 async def get_resident_payments():
