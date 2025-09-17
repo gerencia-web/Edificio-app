@@ -388,7 +388,7 @@ async def get_area_reservations(area_id: str):
         "date": {"$gte": current_date},
         "status": {"$in": ["CONFIRMADA", "PENDIENTE"]}
     }).to_list(100)
-    return reservations
+    return [clean_mongo_doc(reservation) for reservation in reservations]
 
 @api_router.post("/reservations")
 async def create_reservation(reservation_data: dict):
