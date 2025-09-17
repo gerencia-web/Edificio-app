@@ -378,7 +378,7 @@ async def get_common_areas():
         raise HTTPException(status_code=404, detail="Demo building not found")
     
     areas = await db.common_areas.find({"building_id": building["id"], "is_active": True}).to_list(100)
-    return areas
+    return [clean_mongo_doc(area) for area in areas]
 
 @api_router.get("/reservations/{area_id}")
 async def get_area_reservations(area_id: str):
