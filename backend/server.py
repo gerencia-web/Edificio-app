@@ -176,6 +176,20 @@ def prepare_for_mongo(data):
                 data[key] = value.isoformat()
     return data
 
+# Helper function to clean MongoDB documents for JSON serialization
+def clean_mongo_doc(doc):
+    if isinstance(doc, dict):
+        # Remove MongoDB's _id field to avoid ObjectId serialization issues
+        if '_id' in doc:
+            del doc['_id']
+        # Recursively clean nested documents
+        for key, value in doc.items():
+            if isinstance(value, dict):
+                doc[key] = clean_mongo_doc(value)
+            elif isinstance(value, list):
+                doc[key] = [clean_mongo_doc(item) if isinstance(item, dict) else item for item in value]
+    return doc
+
 # Demo data initialization
 async def init_demo_data():
     # Check if demo data already exists
