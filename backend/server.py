@@ -475,7 +475,7 @@ async def create_incident(incident_data: dict):
     )
     
     await db.incidents.insert_one(prepare_for_mongo(incident.dict()))
-    return {"message": "Incidencia reportada exitosamente", "incident": incident}
+    return {"message": "Incidencia reportada exitosamente", "incident": clean_mongo_doc(incident.dict())}
 
 @api_router.get("/incidents")
 async def get_resident_incidents():
@@ -487,7 +487,7 @@ async def get_resident_incidents():
         "building_id": building["id"]
     }).sort("created_at", -1).to_list(100)
     
-    return incidents
+    return [clean_mongo_doc(incident) for incident in incidents]
 
 # Include the router in the main app
 app.include_router(api_router)
