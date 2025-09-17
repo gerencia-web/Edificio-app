@@ -433,7 +433,7 @@ async def get_active_votings():
         "status": "ACTIVA"
     }).to_list(100)
     
-    return votings
+    return [clean_mongo_doc(voting) for voting in votings]
 
 @api_router.post("/vote")
 async def cast_vote(vote_data: dict):
