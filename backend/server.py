@@ -331,6 +331,7 @@ async def get_resident_dashboard():
     
     # Get payment summary
     payments = await db.payments.find({"resident_id": resident_id}).to_list(100)
+    payments = [clean_mongo_doc(p) for p in payments]
     pending_payments = [p for p in payments if p["status"] == "PENDIENTE"]
     overdue_payments = [p for p in payments if p["status"] == "VENCIDO"]
     
@@ -341,21 +342,24 @@ async def get_resident_dashboard():
         "date": {"$gte": current_date},
         "status": "CONFIRMADA"
     }).to_list(10)
+    reservations = [clean_mongo_doc(r) for r in reservations]
     
     # Get active votings
     active_votings = await db.votings.find({
         "building_id": building_id,
         "status": "ACTIVA"
     }).to_list(10)
+    active_votings = [clean_mongo_doc(v) for v in active_votings]
     
     # Get recent incidents
     recent_incidents = await db.incidents.find({
         "reported_by": resident_id,
         "building_id": building_id
     }).sort("created_at", -1).limit(5).to_list(5)
+    recent_incidents = [clean_mongo_doc(i) for i in recent_incidents]
     
     return {
-        "resident": resident,
+        "resident": clean_mongo_doc(resident),
         "payments_summary": {
             "pending_count": len(pending_payments),
             "pending_total": sum(p["amount"] for p in pending_payments),
