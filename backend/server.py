@@ -415,11 +415,12 @@ async def get_resident_payments():
     resident = await db.residents.find_one({"building_id": building["id"]})
     
     payments = await db.payments.find({"resident_id": resident["id"]}).to_list(100)
+    payments = [clean_mongo_doc(payment) for payment in payments]
     
     # Get payment concepts for each payment
     for payment in payments:
         concept = await db.payment_concepts.find_one({"id": payment["concept_id"]})
-        payment["concept"] = concept
+        payment["concept"] = clean_mongo_doc(concept) if concept else None
     
     return payments
 
